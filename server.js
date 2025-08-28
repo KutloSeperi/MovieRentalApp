@@ -1,4 +1,3 @@
-// server.js
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -10,16 +9,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Import and use auth routes
-const authRoutes = require('./routes/authRoutes');
+// ✅ Routes
+const authRoutes = require('./routes/auth');        // Fixed: removed trailing dot
 app.use('/api/auth', authRoutes);
 
-// Test home route
+const itemsRoutes = require('./routes/items');      // Add this!
+app.use('/api/items', itemsRoutes);
+
+const usersRoutes = require('./routes/users');      // Add admin routes
+app.use('/api/users', usersRoutes);
+
+// Error handler middleware (must come after routes)
+app.use((err, req, res, next) => {
+  console.error('🚨 Server Error:', err.message);
+  res.status(500).json({ error: 'Something went wrong.' });
+});
+
+// Health check
 app.get('/', (req, res) => {
   res.send('🎬 Movie Rental API – Server Running');
 });
 
-// Connect to MongoDB Atlas
+// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     const PORT = process.env.PORT || 5000;

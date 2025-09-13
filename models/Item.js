@@ -55,6 +55,17 @@ const ItemSchema = new mongoose.Schema(
     director: {
       type: String,
       trim: true
+    },
+    // ✅ New Field: Store online image URL
+    imageUrl: {
+      type: String,
+      default: null,
+      validate: {
+        validator: function(v) {
+          return !v || /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/.test(v);
+        },
+        message: 'Image URL must be a valid HTTP(S) link ending in .jpg, .png, .gif, or .webp'
+      }
     }
   },
   { timestamps: true }

@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose'); // ✅ ADD THIS MISSING IMPORT
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -42,6 +43,11 @@ router.post('/:id/make-admin', auth, admin, async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+// Debug registered routes
+console.log('📝 Registered routes:');
+router.stack.forEach(layer => {
+  console.log(`${layer.route?.stack[0]?.method?.toUpperCase()} ${layer.route?.path}`);
 });
 
 module.exports = router;

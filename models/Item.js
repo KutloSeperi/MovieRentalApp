@@ -56,7 +56,7 @@ const ItemSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
-    // ✅ New Field: Store online image URL
+    // ✅ Store online image URL (e.g., from TMDb)
     imageUrl: {
       type: String,
       default: null,
@@ -65,6 +65,16 @@ const ItemSchema = new mongoose.Schema(
           return !v || /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/.test(v);
         },
         message: 'Image URL must be a valid HTTP(S) link ending in .jpg, .png, .gif, or .webp'
+      }
+    },
+    // 🔗 Link to TMDb for extended data (optional)
+    tmdbId: {
+      type: Number,
+      unique: true,
+      sparse: true, // only enforced if value exists
+      validate: {
+        validator: Number.isInteger,
+        message: 'TMDb ID must be an integer'
       }
     }
   },

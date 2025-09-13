@@ -110,6 +110,42 @@ router.delete('/:id', auth, admin, async (req, res, next) => {
     next(err);
   }
 });
+
+// GET /api/items/tmdb/:id
+// Get full movie details and image from TMDb
+router.get('/tmdb/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const response = await fetch(
+      `https://api.themoviedb.org/3/movie/${id}?api_key=1e4a463af56d63d1275b8c24c6bcf709`
+    );
+
+    if (!response.ok) {
+      return res.status(500).json({ message: 'Failed to fetch from TMDb' });
+    }
+
+    const data = await response.json();
+
+    // Build full image URL
+    const imageUrl = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+
+    // Return clean object
+    res.json({
+      title: data.title,
+      overview: data.overview,
+      genre: data.genres[0]?.name || 'Drama',
+      releaseYear: parseInt(data.release_date?.split('-')[0]),
+      director: data.production_companies[0]?.name || 'Unknown',
+      imageUrl,
+      rating: data.vote_average,
+      tmdbId: data.id,
+      runtime: data.runtime
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 // Debug registered routes
 console.log('📝 Registered routes:');
 router.stack.forEach(layer => {

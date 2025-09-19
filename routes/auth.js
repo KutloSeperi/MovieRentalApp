@@ -228,7 +228,29 @@ router.put('/me', auth, async (req, res, next) => {
     next(err);
   }
 });
+/**
+ * DELETE /api/auth/me
+ * Delete the currently logged-in user's account
+ */
+router.delete('/me', auth, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
 
+    // Find and delete the user by ID
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Send success response
+    res.json({
+      message: 'Your account has been permanently deleted.'
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 // Debug registered routes
 console.log('📝 Registered routes:');
 router.stack.forEach(layer => {
